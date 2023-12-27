@@ -112,7 +112,7 @@ function compute_dom() {
     if (TO_TEX) {
         katex.render(text, output);
     } else {
-        output.innerText = text;
+    output.innerText = text;
     }
 }
 // ============================================
@@ -252,7 +252,7 @@ function dom(t) {
     else {
         let i_0 = lambda - 1;
         while (i_0 > -1) {
-            if (t.arr[i_0] !== Z)
+            if (!equal(t.arr[i_0], Z))
                 break;
             i_0--;
         }
@@ -278,7 +278,7 @@ function fund(x, y) {
     else {
         let i_0 = lambda - 1;
         while (i_0 > -1) {
-            if (x.arr[i_0] !== Z)
+            if (!equal(x.arr[i_0], Z))
                 break;
             i_0--;
         }
@@ -290,7 +290,7 @@ function fund(x, y) {
                 return y;
             }
             else {
-                if (dom(y) === ONE) {
+                if (equal(dom(y), ONE)) {
                     let xArray = [...x.arr];
                     xArray[lambda - 1] = fund(x.arr[lambda - 1], Z);
                     return plus(fund(x, fund(y, Z)), subspecies(xArray));
@@ -310,7 +310,7 @@ function fund(x, y) {
                 throw Error("なんでだよ");
             let j_0 = lambda - 2;
             while (j_0 > -1) {
-                if (dom_i_0.arr[j_0] !== Z)
+                if (!equal(dom_i_0.arr[j_0], Z))
                     break;
                 j_0--;
             }
@@ -455,19 +455,21 @@ function search_open_parenthesis(str) {
 // commaの位置を列挙する。
 function search_comma(str) {
     let count = 0;
-    let compo = Array(lambda - 1);
-    let i = -1;
-    for (let pos = 0; pos < str.length; pos += 1) {
+    let compo = Array(lambda + 1);
+    let i = 0;
+    compo[0] = -1;
+    compo[lambda] = str.length;
+    for (let pos = 1; pos < str.length; pos += 1) {
         const ch = str[pos];
         if (ch == "(")
             count += 1;
         if (ch == ")")
             count -= 1;
         if (count == 0 && ch == ",") {
-            i += 1;
-            if (i > lambda - 1)
+            if (i >= lambda)
                 throw Error("変数が多いよ");
             compo[i] = pos;
+            i += 1;
         }
     }
     return compo;
@@ -536,14 +538,10 @@ function principal_string_to_term(str) {
     const arg = str.substring(position + 1, argpos);
     let array = Array(lambda);
     const arg_comma = search_comma(arg);
-    let index = arg.substring(0, arg_comma[0]);
-    array[0] = string_to_term(index);
-    for (let i = 1; i < lambda - 1; i++) {
-        index = arg.substring(arg_comma[i - 1] + 1, arg_comma[i]);
+    for (let i = 0; i < lambda; i++) {
+        const index = arg.substring(arg_comma[i] + 1, arg_comma[i + 1]);
         array[i] = string_to_term(index);
     }
-    index = arg.substring(arg_comma[lambda - 2] + 1, arg.length);
-    array[lambda - 1] = string_to_term(index);
     return subspecies(array);
 }
 function sanitize_string(str) {
