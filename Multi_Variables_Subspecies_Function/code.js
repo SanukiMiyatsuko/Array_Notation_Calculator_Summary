@@ -456,10 +456,10 @@ function search_open_parenthesis(str) {
 function search_comma(str) {
     let count = 0;
     let compo = Array(lambda + 1);
-    let i = 0;
+    let i = 1;
     compo[0] = -1;
     compo[lambda] = str.length;
-    for (let pos = 1; pos < str.length; pos += 1) {
+    for (let pos = 0; pos < str.length; pos += 1) {
         const ch = str[pos];
         if (ch == "(")
             count += 1;
