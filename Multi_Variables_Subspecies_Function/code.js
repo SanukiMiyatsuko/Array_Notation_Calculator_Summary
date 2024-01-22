@@ -31,7 +31,7 @@ function toggle_options() {
     if (!r)
         throw new Error("要素がないよ");
     r.style.display =
-        (r.style.display == "none") ? "block" : "none";
+        (r.style.display === "none") ? "block" : "none";
 }
 function compute_fund() {
     const str = document.getElementById("str");
@@ -54,7 +54,7 @@ function compute_fund() {
     catch (error) {
         console.log(error);
         text = "Invalid";
-    } 
+    }
     if (TO_TEX) {
         katex.render(text, output);
     } else {
@@ -77,12 +77,12 @@ function compute_lt() {
     try {
         const x = string_to_term(sanitize_string(str.value));
         const y = string_to_term(sanitize_string(num.value));
-        text = less_than_T(x, y) ? "真" : "偽";
+        text = less_than(x, y) ? "真" : "偽";
     }
     catch (error) {
         console.log(error);
         text = "Invalid";
-    } 
+    }
     if(TO_TEX) {
         katex.render(text, output);
     } else {
@@ -112,10 +112,10 @@ function compute_dom() {
     if (TO_TEX) {
         katex.render(text, output);
     } else {
-    output.innerText = text;
+        output.innerText = text;
     }
 }
-// ============================================
+// ==================================================
 // 表記の定義
 let lambda; // 変数の個数λ
 // "0","1","ω"の形式化
@@ -195,51 +195,45 @@ function sanitize_plus_term(add) {
 }
 ;
 // s <_T t を判定
-function less_than_T(s, t) {
-    if (s.type == "zero") {
+function less_than(s, t) {
+    if (s.type === "zero") {
         return t.type != "zero";
     }
-    else if (s.type == "subspecies") {
-        if (t.type == "zero") {
+    else if (s.type === "subspecies") {
+        if (t.type === "zero") {
             return false;
         }
-        else if (t.type == "subspecies") {
-            return less_than_S(s.arr, t.arr);
+        else if (t.type === "subspecies") {
+            let i_0 = 0;
+            while (i_0 < lambda) {
+                if (!equal(s.arr[i_0], t.arr[i_0]))
+                    break;
+                i_0++;
+            }
+            if (i_0 === lambda)
+                return false;
+            return less_than(s.arr[i_0], t.arr[i_0]);
         }
         else {
-            return equal(s, t.add[0]) || less_than_T(s, t.add[0]);
+            return equal(s, t.add[0]) || less_than(s, t.add[0]);
         }
     }
     else {
-        if (t.type == "zero") {
+        if (t.type === "zero") {
             return false;
         }
-        else if (t.type == "subspecies") {
-            return less_than_T(s.add[0], t);
+        else if (t.type === "subspecies") {
+            return less_than(s.add[0], t);
         }
         else {
             const s2 = sanitize_plus_term(s.add.slice(1));
             const t2 = sanitize_plus_term(t.add.slice(1));
-            return less_than_T(s.add[0], t.add[0]) ||
-                (equal(s.add[0], t.add[0]) && less_than_T(s2, t2));
+            return less_than(s.add[0], t.add[0]) ||
+                (equal(s.add[0], t.add[0]) && less_than(s2, t2));
         }
     }
 }
-// s <_S' t を判定
-function less_than_S(s, t) {
-    if (s.length !== t.length)
-        throw Error("変数の個数が違うよ");
-    if (s.length === 1) {
-        return less_than_T(s[0], t[0]);
-    }
-    else if (s.length > 1) {
-        const s2 = s.slice(1);
-        const t2 = t.slice(1);
-        return less_than_T(s[0], t[0]) ||
-            (equal(s[0], t[0]) && less_than_S(s2, t2));
-    }
-}
-// ============================================
+// ==================================================
 // 関数の定義
 // dom(t)
 function dom(t) {
@@ -335,13 +329,13 @@ function fund(x, y) {
     }
 }
 ;
-// ======================================
+// ===========================================
 // オブジェクトから文字列へ
 function term_to_string(t) {
-    if (t.type == "zero") {
+    if (t.type === "zero") {
         return "0";
     }
-    else if (t.type == "subspecies") {
+    else if (t.type === "subspecies") {
         let array = term_to_string(t.arr[0]);
         for (let i = 1; i < lambda; i++) {
             array = array + "," + term_to_string(t.arr[i]);
@@ -370,7 +364,7 @@ function abbrviate(str) {
         str = str.replace(numterm[0], count.toString());
     }
     if (ABBR_SMALL_OMEGA) {
-        if (lambda == 1) {
+        if (lambda === 1) {
             str = str.replace(/亜\(1\)/g, "ω");
         }
         else {
@@ -384,7 +378,7 @@ function abbrviate(str) {
         }
     }
     if (ABBR_LARGE_OMEGA) {
-        if (lambda == 2) {
+        if (lambda === 2) {
             str = str.replace(/亜\(1,0\)/g, "Ω");
         }
         else {
@@ -398,7 +392,7 @@ function abbrviate(str) {
         }
     }
     if (ABBR_LARGE_IOTA) {
-        if (lambda == 3) {
+        if (lambda === 3) {
             str = str.replace(/亜\(1,0,0\)/g, "I");
         }
         else {
@@ -421,7 +415,7 @@ function to_TeX(str) {
     str = str.replace(/I/g, "\\textrm{I}");
     return str;
 }
-// ======================================
+// ===========================================
 // position以降の"("に対応する")"を探し，
 // その位置を返す
 function search_closure(str, position) {
@@ -434,11 +428,11 @@ function search_closure(str, position) {
     }
     for (; pos < str.length; pos += 1) {
         const ch = str[pos];
-        if (ch == "(")
+        if (ch === "(")
             count += 1;
-        if (ch == ")")
+        if (ch === ")")
             count -= 1;
-        if (count == 0)
+        if (count === 0)
             return pos;
     }
     throw Error(`Unclosed braces`);
@@ -461,11 +455,11 @@ function search_comma(str) {
     compo[lambda] = str.length;
     for (let pos = 0; pos < str.length; pos += 1) {
         const ch = str[pos];
-        if (ch == "(")
+        if (ch === "(")
             count += 1;
-        if (ch == ")")
+        if (ch === ")")
             count -= 1;
-        if (count == 0 && ch == ",") {
+        if (count === 0 && ch === ",") {
             if (i >= lambda)
                 throw Error("変数が多いよ");
             compo[i] = pos;
@@ -484,11 +478,11 @@ function variable(str) {
         let count = 0;
         for (let pos = 0; pos < arg.length; pos += 1) {
             const ch = arg[pos];
-            if (ch == "(")
+            if (ch === "(")
                 count += 1;
-            if (ch == ")")
+            if (ch === ")")
                 count -= 1;
-            if (count == 0 && ch == ",") {
+            if (count === 0 && ch === ",") {
                 i += 1;
             }
         }
@@ -510,19 +504,19 @@ function leftmost_principal(str) {
     return str.substring(0, argpos + 1);
 }
 function string_to_term(str) {
-    if (str == "")
+    if (str === "")
         throw Error("Empty string");
-    if (str == "0")
+    if (str === "0")
         return Z;
     const left = leftmost_principal(str);
     const leftlen = left.length;
-    if (left == str)
+    if (left === str)
         return principal_string_to_term(left);
     const remains = str.slice(leftlen + 1);
     return plus(principal_string_to_term(left), string_to_term(remains));
 }
 function principal_string_to_term(str) {
-    if (str.length == 0)
+    if (str.length === 0)
         throw Error(`Empty principal term`);
     let position = 0;
     if (position >= str.length)
@@ -561,7 +555,7 @@ function sanitize_string(str) {
         }
         str = str.replace(numstr[0], numterm);
     }
-    if (lambda == 1 && str.match(/[wω]/)) {
+    if (lambda === 1 && str.match(/[wω]/)) {
         str = str.replace(/[wω]/g, "a(a(0))");
     }
     else {
@@ -571,9 +565,9 @@ function sanitize_string(str) {
         }
         str = str.replace(/[wω]/g, "a(" + array_1 + ",a(" + array_1 + ",0))");
     }
-    if (lambda == 1 && str.match(/[WΩ]/))
+    if (lambda === 1 && str.match(/[WΩ]/))
         throw Error("Ωはないよなぁ？");
-    if (lambda == 2) {
+    if (lambda === 2) {
         str = str.replace(/[WΩ]/g, "a(a(0,0),0)");
     }
     else {
@@ -585,7 +579,7 @@ function sanitize_string(str) {
     }
     if (lambda <= 2 && str.match("I"))
         throw Error("Iはないよなぁ？");
-    if (lambda == 3) {
+    if (lambda === 3) {
         str = str.replace(/I/g, "a(a(0,0,0),0,0)");
     }
     else {
