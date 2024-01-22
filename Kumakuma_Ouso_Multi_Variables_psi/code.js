@@ -77,7 +77,7 @@ function compute_lt() {
     try {
         const x = string_to_term(sanitize_string(str.value));
         const y = string_to_term(sanitize_string(num.value));
-        text = less_than_T(x, y) ? "真" : "偽";
+        text = less_than(x, y) ? "真" : "偽";
     }
     catch (error) {
         console.log(error);
@@ -195,48 +195,42 @@ function sanitize_plus_term(add) {
 }
 ;
 // s <_T t を判定
-function less_than_T(s, t) {
-    if (s.type == "zero") {
+function less_than(s, t) {
+    if (s.type === "zero") {
         return t.type != "zero";
     }
-    else if (s.type == "psi") {
-        if (t.type == "zero") {
+    else if (s.type === "psi") {
+        if (t.type === "zero") {
             return false;
         }
-        else if (t.type == "psi") {
-            return less_than_S(s.arr, t.arr);
+        else if (t.type === "psi") {
+            let i_0 = 0;
+            while (i_0 < lambda) {
+                if (!equal(s.arr[i_0], t.arr[i_0]))
+                    break;
+                i_0++;
+            }
+            if (i_0 === lambda)
+                return false;
+            return less_than(s.arr[i_0], t.arr[i_0]);
         }
         else {
-            return equal(s, t.add[0]) || less_than_T(s, t.add[0]);
+            return equal(s, t.add[0]) || less_than(s, t.add[0]);
         }
     }
     else {
-        if (t.type == "zero") {
+        if (t.type === "zero") {
             return false;
         }
-        else if (t.type == "psi") {
-            return less_than_T(s.add[0], t);
+        else if (t.type === "psi") {
+            return less_than(s.add[0], t);
         }
         else {
             const s2 = sanitize_plus_term(s.add.slice(1));
             const t2 = sanitize_plus_term(t.add.slice(1));
-            return less_than_T(s.add[0], t.add[0]) ||
-                (equal(s.add[0], t.add[0]) && less_than_T(s2, t2));
+            return less_than(s.add[0], t.add[0]) ||
+                (equal(s.add[0], t.add[0]) && less_than(s2, t2));
         }
-    }
-}
-// s <_S' t を判定
-function less_than_S(s, t) {
-    if (s.length !== t.length)
-        throw Error("変数の個数が違うよ");
-    if (s.length === 1) {
-        return less_than_T(s[0], t[0]);
-    }
-    else if (s.length > 1) {
-        const s2 = s.slice(1);
-        const t2 = t.slice(1);
-        return less_than_T(s[0], t[0]) ||
-            (equal(s[0], t[0]) && less_than_S(s2, t2));
     }
 }
 // ============================================
@@ -263,7 +257,7 @@ function dom(t) {
             return t;
         if (i_0 === lambda - 1 && (equal(dom_i_0, ONE) || equal(dom_i_0, OMEGA)))
             return OMEGA;
-        if (less_than_T(dom_i_0, t))
+        if (less_than(dom_i_0, t))
             return dom_i_0;
         return OMEGA;
     }
@@ -305,7 +299,7 @@ function fund(x, y) {
             }
         }
         else {
-            if (less_than_T(dom_i_0, x)) {
+            if (less_than(dom_i_0, x)) {
                 let xArray = [...x.arr];
                 xArray[i_0] = fund(x.arr[i_0], y);
                 return psi(xArray);
