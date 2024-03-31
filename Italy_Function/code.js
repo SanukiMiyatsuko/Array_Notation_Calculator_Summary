@@ -274,41 +274,25 @@ function fund(x, y) {
             else if (equal(domsub, ONE)) {
                 return y;
             }
-            else if (equal(domsub, OMEGA)) {
-                return italy(fund(sub, y), arg);
-            }
             else {
                 if (domsub.type != "italy")
                     throw Error("なんでだよ");
                 const domsubarg = dom(domsub.arg);
-                if (equal(domsubarg, Z)) {
-                    const c = domsub.sub;
-                    if (equal(dom(y), ONE)) {
-                        const p = fund(x, fund(y, Z));
-                        if (p.type != "italy")
-                            throw Error("なんでだよ");
-                        const gamma = p.sub;
-                        return italy(fund(sub, italy(fund(c, Z), gamma)), arg);
-                    }
-                    else {
-                        return italy(fund(sub, italy(fund(c, Z), Z)), arg);
-                    }
+                if (equal(domsubarg, Z) || equal(domsubarg, ONE))
+                    return italy(fund(sub, y), arg);
+                const c = domsub.sub;
+                if (domsubarg.type != "italy")
+                    throw Error("なんでだよ");
+                const e = domsubarg.sub;
+                if (less_than(y, OMEGA) && equal(dom(y), ONE)) {
+                    const p = fund(x, fund(y, Z));
+                    if (p.type != "italy")
+                        throw Error("なんでだよ");
+                    const gamma = p.sub;
+                    return italy(fund(sub, replace(find(gamma, c), fund(e, Z))), arg);
                 }
                 else {
-                    const c = domsub.sub;
-                    if (domsubarg.type != "italy")
-                        throw Error("なんでだよ");
-                    const e = domsubarg.sub;
-                    if (less_than(y, OMEGA) && equal(dom(y), ONE)) {
-                        const p = fund(x, fund(y, Z));
-                        if (p.type != "italy")
-                            throw Error("なんでだよ");
-                        const gamma = p.sub;
-                        return italy(fund(sub, replace(find(gamma, c), fund(e, Z))), arg);
-                    }
-                    else {
-                        return italy(fund(sub, Z), arg);
-                    }
+                    return italy(fund(sub, Z), arg);
                 }
             }
         }
