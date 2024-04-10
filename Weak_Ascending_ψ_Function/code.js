@@ -443,7 +443,7 @@ function principal_string_to_term(str) {
         throw Error("Invalid subscript ".concat(ch3));
     var subpos = search_closure(str, position, "{", "}");
     var subst = str.substring(position + 1, subpos);
-    var arr = subst.match(/a_\{0\}\(0\)/g);
+    var arr = subst.match(/p_\{0\}\(0\)/g);
     var sub = 0;
     if (arr !== null) {
         sub = arr.length;
