@@ -304,7 +304,7 @@ function fund(x, y) {
         var arg = x.arg;
         var domarg = dom(arg);
         if (equal(domarg, Z)) {
-            return Z;
+            return y;
         }
         else if (equal(domarg, ONE)) {
             if (equal(dom(y), ONE)) {
