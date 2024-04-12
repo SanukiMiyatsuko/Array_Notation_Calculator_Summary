@@ -326,7 +326,7 @@ function fund(x, y) {
                     if (p.type != "psi")
                         throw Error("p.type != \"psi\"");
                     var gamma = p.arg;
-                    return psi(sub, fund(arg, psi(c - 1, gamma)));
+                    return psi(sub, fund(arg, psi(c - 1, search(gamma, arg))));
                 }
                 else {
                     return psi(sub, fund(arg, psi(c - 1, Z)));
@@ -377,7 +377,8 @@ function abbrviate(str) {
         str = str.replace(/ψ_\{0\}\(1\)/g, "ω");
     if (ABBR_LARGE_OMEGA)
         str = str.replace(/ψ_\{1\}\(0\)/g, "Ω");
-    if(TO_TEX) str = to_TeX(str);
+    if(TO_TEX)
+        str = to_TeX(str);
     return str;
 }
 function to_TeX(str) {
