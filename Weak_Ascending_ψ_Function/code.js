@@ -247,12 +247,11 @@ function dom_2(t) {
 }
 // search(t)
 function search(Gamma, BP) {
-    if (equal(dom_2(BP), Z) || equal(dom_2(BP), ONE) || equal(dom_2(BP), OMEGA)) {
+    var dom_2BP = dom_2(BP);
+    if (equal(dom_2BP, Z) || equal(dom_2BP, ONE) || equal(dom_2BP, OMEGA)) {
         if (Gamma.type === "plus" && BP.type === "plus") {
-            var gammalength = --Gamma.arr.length;
-            var BPlength = --BP.arr.length;
-            var b_gamma = { type: "plus", arr: __spreadArray([], Gamma.arr.slice(-gammalength), true) };
-            var d_bp = { type: "plus", arr: __spreadArray([], BP.arr.slice(-BPlength), true) };
+            var b_gamma = Gamma.arr[Gamma.arr.length - 1];
+            var d_bp = BP.arr[BP.arr.length - 1];
             return search(b_gamma, d_bp);
         }
         else if (Gamma.type === "psi" && BP.type === "psi") {
