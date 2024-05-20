@@ -342,9 +342,18 @@ function principal_string_to_term(str) {
         throw Error(`Invalid subscript ${ch3}`);
     const subpos = search_closure(str, position, "{", "}");
     const subst = str.substring(position + 1, subpos);
-    let arr = subst.match(/p_\{0\}\(0\)/g);
+    const arr = subst.match(/p_\{0\}\(0\)/g);
+    const arr1 = subst.match(/ψ_\{0\}\(0\)/g);
     let sub = 0;
-    if (arr !== null) {
+    if (arr === null) {
+        if (arr1 === null) {
+            sub = 0;
+        }
+        else {
+            sub = arr1.length;
+        }
+    }
+    else {
         sub = arr.length;
     }
     position = subpos + 1;
