@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lambda Variables Subspecies Function Calculator</title>
+    <script src="./code.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <section class="section" style="font-family: 'Noto Sans JP', sans-serif;">
+        <div class="container">
+            <h1 class="title">λ変数亞計算機</h1>
+            <p id="description">
+                入力は亞(a,b,c,d,...,x,y,z)の形式で入力してください。変数の個数は固定でお願いします。<br />
+                略記1 := 亞(0,0,...,0), n := 1 + 1 + ...(n個の1), ω := 亞(0,0,...,1), Ω := 亞(0,0,...,1,0), I :=
+                亞(0,0,...,1,0,0)が使用可能です。<br />
+                また、亞はAで、ωはwで、ΩはWで代用可能です。
+            </p>
+            <div class="block">
+                A: <input id="str" type="text" class="input is-primary" />
+                B: <input id="num" type="text" class="input is-primary" />
+            </div>
+            <div class="block">
+                <input type="button" value="A[B]を計算" onclick="compute_fund()" class="button is-primary" />
+                <input type="button" value="A &lt; Bか判定" onclick="compute_lt()" class="button is-primary" />
+                <input type="button" value="dom(A)を計算" onclick="compute_dom()" class="button is-primary" />
+            </div>
+            <input type="button" value="オプション" onclick="toggle_options()" class="button is-primary is-light is-small" />
+            <ul id="options" style="display: none;">
+                <li><label class="checkbox">
+                        <input type="checkbox" id="small-omega">
+                        亞(0,0,...,0,0,1)をωで出力
+                    </label></li>
+                <li><label class="checkbox">
+                        <input type="checkbox" id="large-omega">
+                        亞(0,0,...,0,1,0)をΩで出力
+                    </label></li>
+                <li><label class="checkbox">
+                        <input type="checkbox" id="large-iota">
+                        亞(0,0,...,1,0,0)をIで出力
+                    </label></li>
+                <li><label class="checkbox">
+                        <input type="checkbox" id="to-tex">
+                        TeXで出力
+                    </label></li>
+            </ul>
+            <div class="box">
+                <h2>出力：</h2>
+                <div id="output">...</div>
+            </div>
+            <hr>
+            このページは
+            <a href="https://creativecommons.org/licenses/by-sa/3.0/legalcode">
+                Creative Commons Attribution-ShareAlike 3.0 Unported License
+            </a>
+            の下に公開されます。
+            <br>
+            開発に伴い、
+            <a href="https://googology.fandom.com/ja/wiki/%E3%83%A6%E3%83%BC%E3%82%B6%E3%83%BC:KawamoYurase">川面</a>氏作のコード、または、同氏の助言を大いに参考にさせていただきました。
+            <br>
+            心より感謝申し上げます。
+        </div>
+    </section>
+</body>
+
+</html>
