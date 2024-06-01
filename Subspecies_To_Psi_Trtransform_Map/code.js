@@ -357,22 +357,22 @@ function truns(s) {
         if (t.type === "plusb") {
             if (less_than_B(t.addb[0].arg, psi(lambda - k, Z)))
                 return psi(lambda - k - 1, t);
-            if (equal_B(partition_S(k, t.addb[0].arg), Z)) {
+            if (equal_B(partition_S(lambda - k, t.addb[0].arg), Z)) {
                 const u = sanitize_plus_term_B(t.addb.slice(1));
-                return psi(lambda - k - 1, plus_B(partition_L(k, t.addb[0].arg), u));
+                return psi(lambda - k - 1, plus_B(partition_L(lambda - k, t.addb[0].arg), u));
             }
             else {
-                return psi(lambda - k - 1, plus_B(partition_L(k, t.addb[0].arg), t));
+                return psi(lambda - k - 1, plus_B(partition_L(lambda - k, t.addb[0].arg), t));
             }
         }
         else {
             if (less_than_B(t.arg, psi(lambda - k, Z)))
                 return psi(lambda - k - 1, t);
-            if (equal_B(partition_S(k, t.arg), Z)) {
-                return psi(lambda - k - 1, partition_L(k, t.arg));
+            if (equal_B(partition_S(lambda - k, t.arg), Z)) {
+                return psi(lambda - k - 1, partition_L(lambda - k, t.arg));
             }
             else {
-                return psi(lambda - k - 1, plus_B(partition_L(k, t.arg), t));
+                return psi(lambda - k - 1, plus_B(partition_L(lambda - k, t.arg), t));
             }
         }
     }
