@@ -309,14 +309,19 @@ function Lpred(s) {
         return s;
     }
 }
-// 変換(t)
+// sum
 function sum(k, s) {
     if (k <= 0) {
         return early_collapse(k, truns(s.arr[lambda - k - 1]));
     }
-    else {
+    else if (k === lambda - 1) {
         const a_k = s.arr[lambda - k - 1];
         const b = CARD_Times(k, Lpred(early_collapse(k, truns(a_k))));
+        return plus_B(b, sum(k - 1, s));
+    }
+    else {
+        const a_k = s.arr[lambda - k - 1];
+        const b = CARD_Times(k, early_collapse(k, truns(a_k)));
         return plus_B(b, sum(k - 1, s));
     }
 }
