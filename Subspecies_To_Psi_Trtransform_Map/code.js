@@ -311,10 +311,16 @@ function Lpred(s) {
 }
 // sum
 function sum(k, s) {
+    let l = 0;
+    while (l < lambda) {
+        if (!equal(s.arr[l], Z))
+            break;
+        l++;
+    }
     if (k <= 0) {
         return early_collapse(k, truns(s.arr[lambda - k - 1]));
     }
-    else if (k === lambda - 1) {
+    else if (k === lambda - l - 1) {
         const a_k = s.arr[lambda - k - 1];
         const b = CARD_Times(k, Lpred(early_collapse(k, truns(a_k))));
         return plus_B(b, sum(k - 1, s));
