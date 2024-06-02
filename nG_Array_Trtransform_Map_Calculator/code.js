@@ -41,7 +41,7 @@ function compute_nG() {
     catch (error) {
         console.log(error);
         text = "Invalid";
-    } 
+    }
     if (TO_TEX) {
         katex.render(text, output);
     } else {
@@ -187,14 +187,30 @@ function term_to_string(t) {
         return "0";
     }
     else if (t.type === "Psi") {
-        return "Ψ_{" + t.sub.toString() + "}(" + term_to_string(t.arg) + ")";
+        if (TO_TEX) return "Ψ_{" + t.sub.toString() + "}(" + term_to_string(t.arg) + ")";
+        return "Ψ_" + t.sub.toString() + "(" + term_to_string(t.arg) + ")";
     }
     else {
         return t.add_2.map(term_to_string).join("+");
     }
 }
 function abbrviate(str) {
-    str = str.replace(/Ψ_\{0\}\(0\)/g, "1");
+    if (TO_TEX){
+        str = str.replace(/Ψ_\{0\}\(0\)/g, "1");
+        while (true) {
+            const numterm = str.match(/1(\+1)+/);
+            if (!numterm) break;
+            const matches = numterm[0].match(/1/g);
+            if (!matches) throw ("そんなことある？")
+            const count = matches.length;
+            str = str.replace(numterm[0], count.toString());
+        }
+        if (ABBR_SMALL_OMEGA) str = str.replace(/Ψ_\{0\}\(1\)/g, "ω");
+        if (ABBR_LARGE_OMEGA) str = str.replace(/Ψ_\{1\}\(0\)/g, "Ω");
+        if (TO_TEX) str = to_TeX(str);
+        return str;
+    }
+    str = str.replace(/Ψ_0\(0\)/g, "1");
     while (true) {
         const numterm = str.match(/1(\+1)+/);
         if (!numterm)
@@ -206,10 +222,9 @@ function abbrviate(str) {
         str = str.replace(numterm[0], count.toString());
     }
     if (ABBR_SMALL_OMEGA)
-        str = str.replace(/Ψ_\{0\}\(1\)/g, "ω");
+        str = str.replace(/Ψ_0\(1\)/g, "ω");
     if (ABBR_LARGE_OMEGA)
-        str = str.replace(/Ψ_\{1\}\(0\)/g, "Ω");
-    if(TO_TEX) str = to_TeX(str);
+        str = str.replace(/Ψ_1\(0\)/g, "Ω");
     return str;
 }
 function to_TeX(str) {
