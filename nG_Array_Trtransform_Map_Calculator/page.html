@@ -20,26 +20,32 @@
         <div class="container">
             <h1 class="title">nG配列変換計算機</h1>
             <p id="description">
-                入力はψ(a,b,c,d,...,x,y,z)の形式で入力してください。変数の個数は固定でお願いします。<br />
-                略記1 := ψ(0,0,...,0), n := 1 + 1 + ...(n個の1), ω := ψ(0,0,...,1), Ω := ψ(0,0,...,1,0), I :=
-                ψ(0,0,...,1,0,0)が使用可能です。<br />
-                また、ψはpで、ωはwで、ΩはWで代用可能です。
+                入力はψ(a,b,c,d,...,x,y,z)またはΨ_n(b)(nは自然数)の形式で入力してください。変数の個数は固定でお願いします。<br />
+                略記として多変数は、1 := ψ(0,0,...,0), n := 1 + 1 + ...(n個の1), ω := ψ(0,0,...,1), Ω := ψ(0,0,...,1,0), I :=
+                ψ(0,0,...,1,0,0)<br>
+                2変数は、1 := Ψ_0(0), n := 1 + 1 + ...(n個の1), ω := ψ_0(1), Ω := ψ_1(0)が使用可能です。<br>
+                また、ψはpで、Ψはpで、ωはwで、ΩはWで代用可能です。
             </p>
             <div class="block">
                 A: <input id="str" type="text" class="input is-primary" />
             </div>
             <div class="block">
                 <input type="button" value="nG(A)を計算" onclick="compute_nG()" class="button is-primary" />
+                <input type="button" value="nGinv(A)を計算" onclick="compute_nGinv()" class="button is-primary" />
             </div>
             <input type="button" value="オプション" onclick="toggle_options()" class="button is-primary is-light is-small" />
             <ul id="options" style="display: none;">
                 <li><label class="checkbox">
                         <input type="checkbox" id="small-omega">
-                        Ψ_{0}(1)をωで出力
+                        Ψ_{0}(1)、ψ(0,0,...,0,0,1)をωで出力
                     </label></li>
                 <li><label class="checkbox">
                         <input type="checkbox" id="large-omega">
-                        Ψ_{1}(0)をΩで出力
+                        Ψ_{1}(0)、ψ(0,0,...,0,0,1)をΩで出力
+                    </label></li>
+                <li><label class="checkbox">
+                        <input type="checkbox" id="large-iota">
+                        ψ(0,0,...,1,0,0)をIで出力
                     </label></li>
                 <li><label class="checkbox">
                         <input type="checkbox" id="to-tex">
