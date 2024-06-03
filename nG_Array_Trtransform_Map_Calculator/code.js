@@ -643,7 +643,7 @@ function variable_T2_to_Tlambda(str) {
         return 1;
     str = sanitize_string_T2_to_Tlambda(str);
     str = string_to_string_T2_to_Tlambda(str);
-    const numstr = str.match(/[1-9][0-9]*/);
+    const numstr = str.match(/[1-9][0-9]*/g);
     if (!numstr) return 1;
     let num = Array(numstr.length);
     for (let _ = 0; _ < numstr.length; _++) {
