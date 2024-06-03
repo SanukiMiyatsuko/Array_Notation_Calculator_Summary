@@ -578,6 +578,8 @@ function leftmost_principal_T2_to_Tlambda(str) {
 function string_to_string_T2_to_Tlambda(str) {
     if (str === "")
         throw Error("Empty string");
+    if (str === "I") 
+        throw Error("Iは2変数ではありません。");
     if (str === "0")
         return "0";
     const left = leftmost_principal_T2_to_Tlambda(str);
