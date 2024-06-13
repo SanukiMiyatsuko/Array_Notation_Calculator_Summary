@@ -252,7 +252,7 @@ function replace(s, t) {
     else if (s.type === "plus") {
         const a = s.add[0];
         const remnant = sanitize_plus_term(s.add.slice(1));
-        return plus(replace(a, t), replace(remnant, t));
+        return plus(replace(a, t), remnant);
     }
     else {
         const arg = s.arg;
