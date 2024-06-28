@@ -85,11 +85,7 @@ function compute_dom() {
         console.log(error);
         text = "Invalid";
     }
-    if(TO_TEX) {
-        katex.render(text, output);
-    } else {
-        output.innerText = text;
-    }
+    output.innerText = text;
 }
 const Z = { type: "zero" };
 const ONE = { type: "italy", sub: Z, arg: Z };
@@ -198,24 +194,22 @@ function dom(t) {
         return dom(t.arr[t.arr.length - 1]);
     }
     else {
-        const domsub = dom(t.sub);
-        const domarg = dom(t.arg);
-        if (equal(domarg, Z)) {
-            if (equal(domsub, Z) || equal(domsub, ONE)) {
+        const domb = dom(t.arg);
+        if (domb.type === "zero") {
+            const doma = dom(t.sub);
+            if (doma.type === "zero" || equal(doma, ONE)) {
                 return t;
             }
             else {
                 return OMEGA;
             }
         }
-        else if (equal(domarg, ONE)) {
+        else if (equal(domb, ONE)) {
             return OMEGA;
         }
         else {
-            if (domarg.type != "italy")
-                throw Error("そうはならんやろ");
-            const domargarg = dom(domarg.arg);
-            if (equal(domargarg, Z))
+            const domd = dom(domb.arg);
+            if (equal(domd, Z))
                 return t;
             return OMEGA;
         }
@@ -243,89 +237,95 @@ function replace(s, t) {
         return Z;
     }
     else if (s.type == "plus") {
-        const arg = s.arr[0].arg;
-        const remnant = sanitize_plus_term(s.arr.slice(1));
-        return plus(italy(t, arg), replace(remnant, t));
+        const a = s.arr[0];
+        const b = sanitize_plus_term(s.arr.slice(1));
+        return plus(replace(a, t), replace(b, t));
     }
     else {
-        const arg = s.arg;
-        return italy(t, arg);
+        return italy(t, s.arg);
     }
 }
 // x[y]
-function fund(x, y) {
-    if (x.type == "zero") {
+function fund(s, t) {
+    if (s.type == "zero") {
         return Z;
     }
-    else if (x.type == "plus") {
-        const lastfund = fund(x.arr[x.arr.length - 1], y);
-        const remains = sanitize_plus_term(x.arr.slice(0, x.arr.length - 1));
+    else if (s.type == "plus") {
+        const lastfund = fund(s.arr[s.arr.length - 1], t);
+        const remains = sanitize_plus_term(s.arr.slice(0, s.arr.length - 1));
         return plus(remains, lastfund);
     }
     else {
-        const sub = x.sub;
-        const arg = x.arg;
-        const domsub = dom(sub);
-        const domarg = dom(arg);
-        if (equal(domarg, Z)) {
-            if (equal(domsub, Z)) {
-                return Z;
+        const a = s.sub;
+        const b = s.arg;
+        const domb = dom(b);
+        if (domb.type === "zero") {
+            const doma = dom(a);
+            if (doma.type === "zero" || equal(doma, ONE)) {
+                return t;
             }
-            else if (equal(domsub, ONE)) {
-                return y;
+            else if (equal(doma, OMEGA)) {
+                return italy(fund(a, t), b);
             }
             else {
-                if (domsub.type != "italy")
-                    throw Error("なんでだよ");
-                const domsubarg = dom(domsub.arg);
-                if (equal(domsubarg, Z) || equal(domsubarg, ONE))
-                    return italy(fund(sub, y), arg);
-                const c = domsub.sub;
-                if (domsubarg.type != "italy")
-                    throw Error("なんでだよ");
-                const e = domsubarg.sub;
-                if (less_than(y, OMEGA) && equal(dom(y), ONE)) {
-                    const p = fund(x, fund(y, Z));
-                    if (p.type != "italy")
-                        throw Error("なんでだよ");
-                    const gamma = p.sub;
-                    return italy(fund(sub, replace(find(gamma, c), fund(e, Z))), arg);
+                const c = doma.sub;
+                const domd = dom(doma.arg);
+                if (domd.type === "zero") {
+                    if (less_than(t, OMEGA) && equal(dom(t), ONE)) {
+                        const p = fund(s, fund(t, Z));
+                        if (p.type != "italy")
+                            throw Error("なんでだよ");
+                        const gamma = p.sub;
+                        return italy(fund(a, italy(fund(c, Z), gamma)), b);
+                    }
+                    else {
+                        return italy(fund(a, italy(fund(c, Z), Z)), b);
+                    }
                 }
                 else {
-                    return italy(fund(sub, Z), arg);
+                    if (less_than(t, OMEGA) && equal(dom(t), ONE)) {
+                        const e = domd.sub;
+                        const p = fund(s, fund(t, Z));
+                        if (p.type != "italy")
+                            throw Error("なんでだよ");
+                        const gamma = p.sub;
+                        return italy(fund(a, replace(find(gamma, c), fund(e, Z))), b);
+                    }
+                    else {
+                        return italy(fund(a, Z), b);
+                    }
                 }
             }
         }
-        else if (equal(domarg, ONE)) {
-            if (less_than(y, OMEGA) && equal(dom(y), ONE)) {
-                return plus(fund(x, fund(y, Z)), italy(sub, fund(arg, Z)));
+        else if (equal(domb, ONE)) {
+            if (less_than(t, OMEGA) && equal(dom(t), ONE)) {
+                return plus(fund(s, fund(t, Z)), italy(a, fund(b, Z)));
             }
             else {
                 return Z;
             }
         }
-        else if (equal(domarg, OMEGA)) {
-            return italy(sub, fund(arg, y));
+        else if (equal(domb, OMEGA)) {
+            return italy(a, fund(b, t));
         }
         else {
-            if (domarg.type != "italy")
-                throw Error("なんでだよ");
-            const domargarg = dom(domarg.arg);
-            if (equal(domargarg, Z) || equal(domargarg, ONE))
-                return italy(sub, fund(arg, y));
-            const c = domarg.sub;
-            if (domargarg.type != "italy")
-                throw Error("なんでだよ");
-            const e = domargarg.sub;
-            if (less_than(y, OMEGA) && equal(dom(y), ONE)) {
-                const p = fund(x, fund(y, Z));
-                if (p.type != "italy")
-                    throw Error("なんでだよ");
-                const gamma = p.arg;
-                return italy(sub, fund(arg, replace(find(gamma, c), fund(e, Z))));
+            const domd = dom(domb.arg);
+            if (domd.type === "zero") {
+                return italy(a, fund(b, t));
             }
             else {
-                return italy(sub, fund(arg, Z));
+                if (less_than(t, OMEGA) && equal(dom(t), ONE)) {
+                    const c = domb.sub;
+                    const e = domd.sub;
+                    const p = fund(s, fund(t, Z));
+                    if (p.type != "italy")
+                        throw Error("なんでだよ");
+                    const gamma = p.arg;
+                    return italy(a, fund(b, replace(find(gamma, c), fund(e, Z))));
+                }
+                else {
+                    return italy(a, fund(b, Z));
+                }
             }
         }
     }
@@ -360,7 +360,7 @@ function abbrviate(str) {
     if (ABBR_LARGE_OMEGA)
         str = str.replace(/伊_\{1\}\(0\)/g, "Ω");
     if(TO_TEX) str = to_TeX(str);
-        return str;
+    return str;
 }
 function to_TeX(str) {
     str = str.replace(/伊/g, "\\textrm{伊}");
