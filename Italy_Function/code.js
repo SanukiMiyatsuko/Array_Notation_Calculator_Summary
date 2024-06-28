@@ -359,7 +359,8 @@ function abbrviate(str) {
         str = str.replace(/伊_\{0\}\(1\)/g, "ω");
     if (ABBR_LARGE_OMEGA)
         str = str.replace(/伊_\{1\}\(0\)/g, "Ω");
-    if(TO_TEX) str = to_TeX(str);
+    if(TO_TEX)
+        str = to_TeX(str);
     return str;
 }
 function to_TeX(str) {
